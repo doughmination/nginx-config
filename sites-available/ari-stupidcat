@@ -1,0 +1,56 @@
+server {
+    if ($host = ari.is-a.dev) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    listen [::]:80;
+
+    server_name a.stupid.cat ari.stupid.cat ari.is-a.dev;
+
+    return 301 https://a.stupid.cat$request_uri;
+
+
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name ari.stupid.cat;
+
+    ssl_certificate     /etc/letsencrypt/live/stupid.cat/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/stupid.cat/privkey.pem;
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    return 301 https://a.stupid.cat$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name a.stupid.cat ari.is-a.dev;
+    ssl_certificate /etc/letsencrypt/live/ari.is-a.dev/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/ari.is-a.dev/privkey.pem; # managed by Certbot
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    root /srv/ari/a.stupid.cat;
+    index index.html;
+
+    error_page 404 /404.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location = /404.html {
+        internal;
+    }
+
+}
+
+
