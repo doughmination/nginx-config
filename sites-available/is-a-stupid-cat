@@ -1,0 +1,37 @@
+server {
+
+
+    listen 80;
+    listen [::]:80;
+
+    server_name is-a.stupid.cat;
+    return 301 https://is-a.stupid.cat$request_uri;
+}
+
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name is-a.stupid.cat;
+    ssl_certificate     /etc/letsencrypt/live/stupid.cat/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/stupid.cat/privkey.pem; # managed by Certbot
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    root /srv/is-a-stupid-cat/web;
+    index index.html;
+
+    error_page 404 /404.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location = /404.html {
+        internal;
+    }
+
+}
+
+
