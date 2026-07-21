@@ -1,0 +1,54 @@
+server {
+    if ($host = ari.is-a.dev) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    listen [::]:80;
+
+    server_name www.gaybot.site gaybot.site;
+
+    return 301 https://gaybot.site$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name www.gaybot.site;
+
+    ssl_certificate     /etc/letsencrypt/live/gaybot.site/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/gaybot.site/privkey.pem;
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    return 301 https://gaybot.site$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name gaybot.site;
+    ssl_certificate     /etc/letsencrypt/live/gaybot.site/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/gaybot.site/privkey.pem; # managed by Certbot
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    root /srv/gayteam/gaybot-web;
+    index index.html;
+
+    error_page 404 /404.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location = /404.html {
+        internal;
+    }
+
+}
+
+
