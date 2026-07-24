@@ -20,8 +20,8 @@ server {
 
     server_name www.doughmination.info;
 
-    ssl_certificate     /etc/letsencrypt/live/doughmination.info/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/doughmination.info/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/doughmination/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doughmination/privkey.pem;
     include             /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
 
@@ -35,8 +35,8 @@ server {
 
     server_name doughmination.info;
 
-    ssl_certificate     /etc/letsencrypt/live/doughmination.info/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/doughmination.info/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/doughmination/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doughmination/privkey.pem;
     include             /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
 

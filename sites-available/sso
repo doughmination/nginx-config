@@ -11,8 +11,8 @@ server {
     listen [::]:443 ssl;
     server_name www.doughmination.xyz;
 
-    ssl_certificate /etc/letsencrypt/live/doughmination.xyz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/doughmination.xyz/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/doughmination/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doughmination/privkey.pem;
 
     return 301 https://doughmination.xyz$request_uri;
 }
@@ -22,8 +22,8 @@ server {
     listen [::]:443 ssl;
     server_name doughmination.xyz;
 
-    ssl_certificate /etc/letsencrypt/live/doughmination.xyz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/doughmination.xyz/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/doughmination/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doughmination/privkey.pem;
 
     include snippets/cf-real-ip.conf;
 
