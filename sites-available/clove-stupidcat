@@ -3,49 +3,71 @@ map $http_upgrade $connection_upgrade {
     ''      close;
 }
 
-# ---- HTTP → HTTPS (canonical host) ----
+# ---- OLD HOSTS (HTTP) → NEW DOMAIN ----
 server {
     listen 80;
     listen [::]:80;
 
     server_name c.stupid.cat clove.stupid.cat;
 
-    return 301 https://c.stupid.cat$request_uri;
+    return 301 https://doughmination.gay$request_uri;
 }
 
-# ---- clove.stupid.cat (HTTPS) → canonical c.stupid.cat ----
+# ---- OLD HOSTS (HTTPS) → NEW DOMAIN ----
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    server_name clove.stupid.cat;
+    server_name c.stupid.cat clove.stupid.cat;
 
     ssl_certificate     /etc/letsencrypt/live/stupid.cat/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/stupid.cat/privkey.pem;
     include             /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
 
-    return 301 https://c.stupid.cat$request_uri;
+    return 301 https://doughmination.gay$request_uri;
 }
 
-# ---- c.stupid.cat (HTTPS) → Next.js app (Docker) on 127.0.0.1:5002 ----
+# ---- NEW DOMAIN (HTTP) → HTTPS ----
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name doughmination.gay www.doughmination.gay;
+
+    return 301 https://doughmination.gay$request_uri;
+}
+
+# ---- www → apex ----
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    server_name c.stupid.cat;
+    server_name www.doughmination.gay;
 
-    ssl_certificate     /etc/letsencrypt/live/stupid.cat/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/stupid.cat/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/doughmination/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doughmination/privkey.pem;
     include             /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
 
-    # Small headroom for guestbook posts etc.
+    return 301 https://doughmination.gay$request_uri;
+}
+
+# ---- doughmination.gay → Next.js app ----
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name doughmination.gay;
+
+    ssl_certificate     /etc/letsencrypt/live/doughmination/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doughmination/privkey.pem;
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
     client_max_body_size 10m;
 
-    # ---- Compression ----
-    # Next's standalone server does not compress; do it here. Big win for the
-    # large hand-written scripts (core.js ~41KB, discord.js ~48KB) and CSS.
+    # Compression
     gzip              on;
     gzip_vary         on;
     gzip_proxied      any;

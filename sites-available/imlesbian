@@ -1,0 +1,91 @@
+upstream imlesbian_frontend {
+    server 127.0.0.1:4070;
+    keepalive 32;
+}
+
+upstream imlesbian_backend {
+    server 127.0.0.1:4071;
+    keepalive 32;
+}
+
+# --- HTTP -> HTTPS redirect, covers root + all subdomains (incl. api) ---
+server {
+    listen 80;
+    listen [::]:80;
+    server_name imlesbian.fyi *.imlesbian.fyi;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# --- HTTPS: api.imlesbian.fyi -> backend directly ---
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name api.imlesbian.fyi;
+
+    ssl_certificate     /etc/letsencrypt/live/imlesbian.fyi/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/imlesbian.fyi/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+    limit_req zone=imlesbian_general burst=20 nodelay;
+
+    location / {
+        proxy_pass http://imlesbian_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+    }
+}
+
+# --- HTTPS: root domain + wildcard subdomains -> frontend ---
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name imlesbian.fyi *.imlesbian.fyi;
+
+    # Wildcard cert covering imlesbian.fyi and *.imlesbian.fyi. Since
+    # you're managing certbot yourself: this still needs to be issued via
+    # DNS-01 (required for wildcards, HTTP-01/webroot can't do it), e.g.
+    #   certbot certonly --dns-cloudflare \
+    #     --dns-cloudflare-credentials /path/to/cloudflare.ini \
+    #     -d imlesbian.fyi -d "*.imlesbian.fyi" -d api.imlesbian.fyi
+    ssl_certificate     /etc/letsencrypt/live/imlesbian.fyi/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/imlesbian.fyi/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+    limit_req zone=imlesbian_general burst=20 nodelay;
+
+    location / {
+        proxy_pass http://imlesbian_frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+    }
+}
+
+# Rate limit zone — put this in the top-level http{} block of your main
+# nginx.conf (not here — limit_req_zone can't live inside a server block):
+#   limit_req_zone $binary_remote_addr zone=imlesbian_general:10m rate=10r/s;
