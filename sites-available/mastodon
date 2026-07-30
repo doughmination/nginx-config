@@ -29,8 +29,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
-  listen [::]:443 ssl http2;
+  listen 443 ssl;
+  listen [::]:443 ssl;
   server_name fedi.stupid.cat;
 
   ssl_protocols TLSv1.2 TLSv1.3;
