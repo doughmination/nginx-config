@@ -1,7 +1,5 @@
-map $http_upgrade $connection_upgrade {
-  default upgrade;
-  ''      close;
-}
+# $connection_upgrade now comes from conf.d/10-connection-upgrade.conf (defined
+# once, http context). Removed the local map to stop the duplicate-map error.
 
 upstream backend {
     server 127.0.0.1:3000 fail_timeout=0;
