@@ -9,6 +9,7 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
 
     server_name www.ari.rip;
     ssl_certificate     /etc/letsencrypt/live/ari.rip/fullchain.pem; # managed by Certbot
@@ -22,6 +23,7 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
 
     server_name ari.rip;
     ssl_certificate     /etc/letsencrypt/live/ari.rip/fullchain.pem; # managed by Certbot

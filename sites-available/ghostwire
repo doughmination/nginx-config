@@ -13,6 +13,7 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
     server_name security.girlsnetwork.dev;
     include snippets/cf-real-ip.conf;
     client_max_body_size 8k;     # callback is just query-string, nothing big

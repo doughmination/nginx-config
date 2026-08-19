@@ -16,6 +16,7 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
     server_name status.gaybot.site;
 
     # Reuse the main gaybot.site certificate

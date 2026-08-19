@@ -15,6 +15,7 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
 
     server_name www.gaybot.site;
 
@@ -29,6 +30,7 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
 
     server_name gaybot.site;
     ssl_certificate     /etc/letsencrypt/live/gaybot.site/fullchain.pem; # managed by Certbot
