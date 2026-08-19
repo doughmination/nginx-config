@@ -20,8 +20,8 @@ server {
     server_name status.gaybot.site;
 
     # Reuse the main gaybot.site certificate
-    ssl_certificate     /etc/letsencrypt/live/gaybot.site/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/gaybot.site/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/status.gaybot.site/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/status.gaybot.site/privkey.pem;
     include             /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
 
